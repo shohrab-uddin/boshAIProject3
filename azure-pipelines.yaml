@@ -1,4 +1,11 @@
 name: Azure Pipelines
+
+trigger:
+- main
+
+# TODO: Replace the agent pool name
+pool: myAgentPool
+
 variables:
   python.version: '3.8.10'
   vmImageName: 'ubuntu-18.04-LTS'
@@ -8,8 +15,7 @@ stages:
 - stage: Provision
   jobs:
   - job: TerraformTasks
-    pool:
-      vmImage: $(vmImageName)
+    pool: myAgentPool
     steps:
     # Needed for Terraform VM deployment
     - task: InstallSSHKey@0
@@ -56,8 +62,7 @@ stages:
   jobs:
   - job: build_artifacts
     displayName: Build Artifacts
-    pool:
-      vmImage: $(vmImageName)
+    pool: myAgentPool
     steps: 
     - task: ArchiveFiles@2
       displayName: 'Archive FakeRestAPI'
@@ -72,8 +77,7 @@ stages:
 - stage:
   jobs:
   - deployment: FakeRestAPI
-    pool:
-      vmImage:  $(vmImageName)
+    pool: myAgentPool
     environment: 'TEST'
     strategy:
       runOnce:
