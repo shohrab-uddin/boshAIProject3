@@ -22,7 +22,7 @@ stages:
       displayName: 'Install an SSH key'    
       inputs:
         knownHostsEntry: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDDcgQaOgRXbbehtALaBe4wL3slux0uS4YkGgqDbQCQX8A+5MUKSiHdvT3VqynGcirtaR9M6SS+HMcxezIHZ466CPs3o7c5RqRYL9ohDMEYJptOvBMkO3QimlLCS7qqnNC+2sV5NyJCS7UrIBZp83j5FxAgoy5SHw4NQn6FXKskHYKDT76MopZUgIBawR5zO0ZCG9pxjeltsf45oZJlZ8qSVQ7JDl9iwiCYodM1SyO207oE91MXnoh4l2Tl03tez6bCbS/z6VNjHEu6xLiZoPo0X1y+/84Stvj/D5CFXMTMOcDsvUGWchTgZ3MPTeXaqmlFffTyro5JRzjPOID0p0JD'
-        sshPublicKey: '$(azure-portal-ssh-key)'
+        sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/t0NS7I7VVL9c98FHHGKgoppCi806hRsor4YKI2fznIpEpYVoDMfMshhJTYoTUA56QNQg0Trt730CaXC3D9dq3Lrae3B/xC4CP1FEz7uAOd4T+zeM4M6+853mUBQjI8lXW13iJ8ZUzmVBCbfI4Zu5WJxlJGu+/W7tIvY7C36ln02X/JkCCtzCHzXQhFhVWujZqfcjWSaYUmvH+dKCtgTgv14uE4T+ezbrfr4uvq0nxuXN9d4UClNYP1ttDc9hZ1LwyNp0fOIg6TZzo/GoiW1XaDI09MO9eKv1xOWpYO5nz3mGUkg8GOUsyazWa8Lag5jZYCXN0nBSmfkS4fZdjjvV9nbbFZ3+yxQcZb7UwJT0Y6dZgpmV6GB2L+jrfPx2jtTS6l2s0w3Obb1Ass2CHwEqx+ohHPNjdbg3dV+j736K17NZFp4liybGnSdXqucaiXIg7ZVyPkBJBQ/8af/sAsGBZGjSz2RTEOeXeS2XH+7UYIyi8wxEMymEwEuoUIq4F0M= shohrab@cc-8e6dc24c-7d65c56f6b-b6hdl'
         sshKeySecureFile: 'id_rsa_azure_portal'
     
     - task: TerraformInstaller@0
