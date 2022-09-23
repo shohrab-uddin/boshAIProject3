@@ -19,6 +19,7 @@ stages:
     steps:
     # Needed for Terraform VM deployment
     - task: InstallSSHKey@0
+      displayName: 'Install an SSH key'    
       inputs:
         knownHostsEntry: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDDcgQaOgRXbbehtALaBe4wL3slux0uS4YkGgqDbQCQX8A+5MUKSiHdvT3VqynGcirtaR9M6SS+HMcxezIHZ466CPs3o7c5RqRYL9ohDMEYJptOvBMkO3QimlLCS7qqnNC+2sV5NyJCS7UrIBZp83j5FxAgoy5SHw4NQn6FXKskHYKDT76MopZUgIBawR5zO0ZCG9pxjeltsf45oZJlZ8qSVQ7JDl9iwiCYodM1SyO207oE91MXnoh4l2Tl03tez6bCbS/z6VNjHEu6xLiZoPo0X1y+/84Stvj/D5CFXMTMOcDsvUGWchTgZ3MPTeXaqmlFffTyro5JRzjPOID0p0JD'
         sshPublicKey: '$(azure-portal-ssh-key)'
