@@ -1,19 +1,64 @@
 name: Azure Pipelines
 variables:
-  python.version: '3.7.6'
+  python.version: '3.8.10'
+  vmImageName: 'ubuntu-18.04-LTS'
+  terraform.version: '1.2.8'
+  
 stages:
-- stage: Build
+- stage: Provision
   jobs:
-  - job: Build
+  - job: TerraformTasks
     pool:
-      name: Hosted Ubuntu 1604
+      vmImage: $(vmImageName)
     steps:
     # Needed for Terraform VM deployment
-    # - task: InstallSSHKey@0
-    #   inputs:
-    #     knownHostsEntry: 'KNOWN_HOSTS_STRING'
-    #     sshPublicKey: 'PUBLIC_KEY'
-    #     sshKeySecureFile: 'id_rsa'
+    - task: InstallSSHKey@0
+      inputs:
+        knownHostsEntry: 'KNOWN_HOSTS_STRING'
+        sshPublicKey: '$(azure-portal-ssh-key)'
+        sshKeySecureFile: 'id_rsa_azure_portal'
+    
+    - task: TerraformInstaller@0
+      displayName: Terraform Install
+      inputs:
+        terraformVersion: 'latest'
+    
+    - task: TerraformTaskV3@3
+      displayName: Terraform Init
+      inputs:
+        provider: 'azurerm'
+        command: 'init'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/teraform'
+        backendServiceArm: 'myInitialRG-service-connection'
+        backendAzureRmResourceGroupName: 'myInitialRG'
+        backendAzureRmStorageAccountName: 'initialstorage101'
+        backendAzureRmContainerName: 'initialcontainer101'
+        backendAzureRmKey: 'terraform.tfstate'
+    
+    - task: TerraformTaskV3@3
+      displayName: 'Terraform Plan'
+      inputs:
+        provider: 'azurerm'
+        command: 'plan'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        environmentServiceNameAzureRM: 'myInitialRG-service-connection'
+        commandOptions: '-lock=false'
+
+    - task: TerraformTaskV3@3
+      displayName: Terraform Apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        environmentServiceNameAzureRM: 'myInitialRG-service-connection'
+
+- stage: Build
+  jobs:
+  - job: build_artifacts
+    displayName: Build Artifacts
+    pool:
+      vmImage: $(vmImageName)
+    steps: 
     - task: ArchiveFiles@2
       displayName: 'Archive FakeRestAPI'
       inputs:
@@ -28,7 +73,7 @@ stages:
   jobs:
   - deployment: FakeRestAPI
     pool:
-      vmImage: 'Ubuntu-16.04'
+      vmImage:  $(vmImageName)
     environment: 'TEST'
     strategy:
       runOnce:
@@ -37,31 +82,26 @@ stages:
           - task: AzureWebApp@1
             displayName: 'Deploy Azure Web App'
             inputs:
-              azureSubscription: ''
-              appName: ''
+              azureSubscription: 'myRG2-service-connection'
+              appName: 'myApplication2-AppService2'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-  # - deployment: VMDeploy
-  #   displayName: NAME
-  #   environment:
-  #     name:  ENVIRONMENT NAME
-  #     resourceType: VirtualMachine
-  #     tags: TAG NAME
-  #   strategy:
-  #     runOnce:
-  #       deploy:
-  #         steps:
-  #         - task: Bash@3
-  #           inputs:
-  #             targetType: 'inline'
-  #             script: |
-  #               #! /bin/bash
-                
-  #               sudo apt-get upgrade -y
-  #               sudo apt-get install python3-pip -y
-  #               sudo apt-get install unzip -y
-  #               sudo apt-get install -y chromium-browser
-  #               pip3 install selenium
-  #               export PATH=$PATH:some/path
-
-
+  - deployment: VMDeploy
+    displayName: Deploy Virtual Machine
+    environment:
+     name:  'myApplication2-myVM3'
+     resourceType: VirtualMachine
+  #  tags: TAG NAME
+    strategy:
+      runOnce:
+        deploy:
+         steps:
+         - bash: |
+             sudo apt-get upgrade -y
+             sudo apt-get install python3-pip -y
+             sudo apt-get install unzip -y
+             sudo apt-get install -y chromium-browser
+             sudo apt-get install -y chromium-chromedriver
+             python3 -m pip install --upgrade pip
+             pip3 install selenium
+           displayName: Configure VM
