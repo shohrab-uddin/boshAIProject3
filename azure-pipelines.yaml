@@ -90,7 +90,9 @@ stages:
               appName: 'myApplication2-AppService2'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+  
   - deployment: VMDeploy
+    pool: myAgentPool
     displayName: Deploy Virtual Machine
     environment:
      name:  'myApplication2-myVM3'
