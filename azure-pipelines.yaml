@@ -35,7 +35,7 @@ stages:
       inputs:
         provider: 'azurerm'
         command: 'init'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/teraform'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         backendServiceArm: 'myInitialRG-service-connection'
         backendAzureRmResourceGroupName: 'myInitialRG'
         backendAzureRmStorageAccountName: 'initialstorage101'
