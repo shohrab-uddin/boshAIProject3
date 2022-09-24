@@ -3,7 +3,6 @@ name: Azure Pipelines
 trigger:
 - main
 
-# TODO: Replace the agent pool name
 pool: myAgentPool
 
 variables:
