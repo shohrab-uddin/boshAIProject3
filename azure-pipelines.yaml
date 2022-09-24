@@ -71,12 +71,31 @@ stages:
         includeRootFolder: false
         archiveType: 'zip'
         archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
-    - publish: $(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip
-      displayName: 'Upload Package'
-      artifact: drop-fakerestapi
-- stage:
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Fakerestapi as Artifact
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId)-fakerestapi.zip'
+        artifactName: 'drop-fakerestapi'
+    
+    - task: ArchiveFiles@2
+      displayName: Archive Selenium
+      inputs:
+        rootFolderOrFile: '$(System.DefaultWorkingDirectory)/automatedtesting/selenium'
+        includeRootFolder: false
+        archiveType: 'zip'
+        archiveFile: '$(Build.ArtifactStagingDirectory)/selenium-$(Build.BuildId).zip'
+
+    - task: PublishPipelineArtifact@1
+      displayName: Publish Selenium Artifact
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)/selenium-$(Build.BuildId).zip'
+        artifactName: 'drop-selenium'
+
+- stage: Deploy
   jobs:
-  - deployment: FakeRestAPI
+  - deployment: deploy_fakerestapi
+    displayName: Deploy FakeRestAPI
     pool: myAgentPool
     environment: 'TEST'
     strategy:
@@ -90,3 +109,36 @@ stages:
               appName: 'myApplication2-AppService2'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
+              deploymentMethod: 'auto'
+
+- stage: Test
+  jobs:
+  - job: IntegrationTests
+    displayName: Integration Tests
+    pool: myAgentPool
+    steps:
+    - task: CmdLine@2
+      displayName: Install Newman
+      inputs:
+        script: |
+          sudo npm install -g newman
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
+      
+    - task: CmdLine@2
+      displayName: Apply Regression Tests
+      inputs:
+        script: 'newman run automatedtesting/postman/regressiontest.postman_collection.json -e automatedtesting/postman/regressiontest.postman_environment.json'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+   
+    - task: CmdLine@2
+      displayName: Apply Validation Tests
+      continueOnError: true
+      inputs:
+        script: 'newman run automatedtesting/postman/dataValidation.postman_collection.json \ -e automatedtesting/postman/dataValidation.postman_environment.json -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)/Results/JunitResults-prod.xml'
+        workingDirectory: $(System.DefaultWorkingdirectory)
+    - task: PublishTestResults@2
+      displayName: Publish Test Results
+      inputs:
+        testResultsFiles: '**/TEST-*.xml' 
+        searchFolder: '$(build.artifactstagingdirectory)' 
+        publishRunAttachments: true 
