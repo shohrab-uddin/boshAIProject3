@@ -50,14 +50,6 @@ stages:
         environmentServiceNameAzureRM: 'myInitialRG-service-connection'
         commandOptions: '-lock=false'
 
-    - task: TerraformTaskV3@3
-      displayName: Terraform Apply
-      inputs:
-        provider: 'azurerm'
-        command: 'apply'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceNameAzureRM: 'myInitialRG-service-connection'
-
 - stage: Build
   jobs:
   - job: build_artifacts
@@ -90,24 +82,3 @@ stages:
               appName: 'myApplication2-AppService2'
               appType: webApp
               package: $(Pipeline.Workspace)/drop-fakerestapi/$(Build.BuildId)-fakerestapi.zip
-  
-  - deployment: VMDeploy
-    pool: myAgentPool
-    displayName: Deploy Virtual Machine
-    environment:
-     name:  'myApplication2-myVM3'
-     resourceType: VirtualMachine
-  #  tags: TAG NAME
-    strategy:
-      runOnce:
-        deploy:
-         steps:
-         - bash: |
-             sudo apt-get upgrade -y
-             sudo apt-get install python3-pip -y
-             sudo apt-get install unzip -y
-             sudo apt-get install -y chromium-browser
-             sudo apt-get install -y chromium-chromedriver
-             python3 -m pip install --upgrade pip
-             pip3 install selenium
-           displayName: Configure VM
