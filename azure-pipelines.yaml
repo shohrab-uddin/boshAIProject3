@@ -50,6 +50,14 @@ stages:
         environmentServiceNameAzureRM: 'myInitialRG-service-connection'
         commandOptions: '-lock=false'
 
+    - task: TerraformTaskV3@3
+      displayName: Terraform Apply
+      inputs:
+        provider: 'azurerm'
+        command: 'apply'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+        environmentServiceNameAzureRM: 'myInitialRG-service-connection'
+
 - stage: Build
   jobs:
   - job: build_artifacts
