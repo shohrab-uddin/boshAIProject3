@@ -87,6 +87,7 @@ module "virtual-machine" {
   location               = "${var.location}"
   subnet_id              = "${module.network.subnet_id_test}"
   public_ip_address_id   = "${module.publicip.public_ip_address_id}"
+  ssh_public_key         = "${var.ssh_public_key}"
 }
 
 
