@@ -24,8 +24,8 @@ resource "azurerm_linux_virtual_machine" "test" {
 	]
   admin_ssh_key {
     username   = "${var.username}"
-    //public_key = file("~/.ssh/id_rsa.pub")
-    public_key = file("C:/Users/shohr/.ssh/id_rsa_azure_portal.pub")
+    public_key = file("~/.ssh/id_rsa.pub")
+    // public_key = file("C:/Users/shohr/.ssh/id_rsa_azure_portal.pub") // this is requird when run terraform plan or apply in local machine
   }
   os_disk {
     caching           = "ReadWrite"
