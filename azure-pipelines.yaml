@@ -127,7 +127,7 @@ stages:
     - task: CmdLine@2
       displayName: Apply Regression Tests
       inputs:
-        script: 'newman run automatedtesting/postman/regressiontest.postman_collection.json -e automatedtesting/postman/regressiontest.postman_environment.json'
+        script: 'newman run automatedtesting/postman/regressiontest.postman_collection.json \ -e automatedtesting/postman/regressiontest.postman_environment.json'
         workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
    
     - task: CmdLine@2
