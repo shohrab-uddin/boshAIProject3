@@ -1,7 +1,7 @@
 name: Azure Pipelines
 
-trigger:
-- main
+# trigger:
+# - main
 
 pool: myAgentPool
 
@@ -127,8 +127,8 @@ stages:
     - task: CmdLine@2
       displayName: Apply Regression Tests
       inputs:
-        script: 'newman run regressiontest.postman_collection.json -e regressiontest.postman_environment.json'
-        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
+        script: 'newman run automatedtesting/postman/regressiontest.postman_collection.json -e automatedtesting/postman/regressiontest.postman_environment.json'
+        workingDirectory: '$(System.DefaultWorkingDirectory)'
    
     - task: CmdLine@2
       displayName: Apply Validation Tests
