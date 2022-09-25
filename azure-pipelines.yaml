@@ -128,14 +128,14 @@ stages:
       displayName: Apply Regression Tests
       inputs:
         script: 'newman run automatedtesting/postman/regressiontest.postman_collection.json -e automatedtesting/postman/regressiontest.postman_environment.json'
-        workingDirectory: '$(System.DefaultWorkingDirectory)'
+        workingDirectory: '$(System.DefaultWorkingDirectory)/automatedtesting/postman'
    
     - task: CmdLine@2
       displayName: Apply Validation Tests
       continueOnError: true
       inputs:
         script: 'newman run automatedtesting/postman/dataValidation.postman_collection.json \ -e automatedtesting/postman/dataValidation.postman_environment.json -x -r junit --reporter-junit-export $(build.artifactstagingdirectory)/Results/JunitResults-prod.xml'
-        workingDirectory: $(System.DefaultWorkingdirectory)
+        workingDirectory: '$(System.DefaultWorkingdirectory)/automatedtesting/postman'
     - task: PublishTestResults@2
       displayName: Publish Test Results
       inputs:
