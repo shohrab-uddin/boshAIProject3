@@ -48,7 +48,7 @@ stages:
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
         environmentServiceNameAzureRM: 'myInitialRG-service-connection'
-        commandOptions: '-lock=false'
+      # commandOptions: '-lock=false'
 
     - task: TerraformTaskV3@3
       displayName: Terraform Apply
