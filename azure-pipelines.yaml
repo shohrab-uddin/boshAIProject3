@@ -161,7 +161,7 @@ stages:
       continueOnError: true
       inputs:
         script: 'newman run automatedtesting/postman/dataValidation.postman_collection.json --reporters cli,junit --reporter-junit-export ./automatedtesting/postman/TEST-validation.xml'
-        workingDirectory: '$(System.DefaultWorkingdirectory)/automatedtesting/postman'
+        workingDirectory: '$(System.DefaultWorkingdirectory)'
     - task: PublishTestResults@2
       displayName: Publish Test Results
       inputs:
