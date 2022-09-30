@@ -14,7 +14,8 @@ stages:
 - stage: Provision
   jobs:
   - job: TerraformTasks
-    pool: myAgentPool
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     # Needed for Terraform VM deployment
     - task: InstallSSHKey@0
@@ -63,7 +64,8 @@ stages:
   jobs:
   - job: build_artifacts
     displayName: Build Artifacts
-    pool: myAgentPool
+    pool:
+      vmImage: 'ubuntu-latest'
     steps: 
     - task: ArchiveFiles@2
       displayName: 'Archive FakeRestAPI'
@@ -97,7 +99,8 @@ stages:
   jobs:
   - deployment: deploy_fakerestapi
     displayName: Deploy FakeRestAPI
-    pool: myAgentPool
+    pool:
+      vmImage: 'ubuntu-latest'
     environment: 'TEST'
     strategy:
       runOnce:
@@ -114,7 +117,8 @@ stages:
 
   - deployment: VMDeploy
     displayName: Deploy Virtual Machine
-    pool: myAgentPool
+    pool:
+      vmImage: 'ubuntu-latest'
     environment:
       name: 'TEST'
       resourceType: VirtualMachine
@@ -140,7 +144,8 @@ stages:
   jobs:
   - job: IntegrationTests
     displayName: Integration Tests
-    pool: myAgentPool
+    pool:
+      vmImage: 'ubuntu-latest'
     steps:
     - task: CmdLine@2
       displayName: Install Newman
