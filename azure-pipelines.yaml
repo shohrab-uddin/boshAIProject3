@@ -36,7 +36,7 @@ stages:
         provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        backendServiceArm: 'myInitialRG-service-connection'
+        backendServiceArm: 'myRG2-service-connection'
         backendAzureRmResourceGroupName: 'myInitialRG'
         backendAzureRmStorageAccountName: 'initialstorage101'
         backendAzureRmContainerName: 'initialcontainer101'
@@ -48,7 +48,7 @@ stages:
         provider: 'azurerm'
         command: 'plan'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceNameAzureRM: 'myInitialRG-service-connection'
+        environmentServiceNameAzureRM: 'myRG2-service-connection'
         commandOptions: '-lock=false'
 
     - task: TerraformTaskV3@3
@@ -57,7 +57,7 @@ stages:
         provider: 'azurerm'
         command: 'apply'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceNameAzureRM: 'myInitialRG-service-connection'
+        environmentServiceNameAzureRM: 'myRG2-service-connection'
         commandOptions: '-lock=false'
 
 - stage: Build
@@ -135,7 +135,7 @@ stages:
                 python3 -m pip install --upgrade pip
                 pip3 install selenium
                 # Install Log Analytics agent on Linux computers (only need to run once, comment when installed)
-                # wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w ${AZURE_LOG_ANALYTICS_ID} -s ${AZURE_LOG_ANALYTICS_PRIMARY_KEY} -d opinsights.azure.com
+                wget https://raw.githubusercontent.com/Microsoft/OMS-Agent-for-Linux/master/installer/scripts/onboard_agent.sh && sh onboard_agent.sh -w ${AZURE_LOG_ANALYTICS_ID} -s ${AZURE_LOG_ANALYTICS_PRIMARY_KEY} -d opinsights.azure.com
               env: 
                 AZURE_LOG_ANALYTICS_ID: $(la_workspace_id)
                 AZURE_LOG_ANALYTICS_PRIMARY_KEY: $(la_primary_key)
