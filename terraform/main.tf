@@ -90,7 +90,7 @@ module "virtual-machine" {
   ssh_public_key         = "${var.ssh_public_key}"
 }
 
-
+/*
 module "storage" {
   source               = "./modules/storage"
   location             = "${var.location}"
@@ -98,4 +98,4 @@ module "storage" {
   resource_group       = module.resource_group.resource_group_name //resource_group_name is the output varible name in resource_group/output.tf file
   storage_account_name = "mystorage2"
   storage_container_name = "mycontainer2"
-}
+}*/
