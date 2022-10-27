@@ -17,10 +17,10 @@ provider "azurerm" {
 
 terraform {
   backend "azurerm" {
-    storage_account_name = "initialstorage101"
-    container_name       = "initialcontainer101"
+    storage_account_name = "tfstate17745"
+    container_name       = "tfstate"
     key                  = "terraform.tfstate"
-    access_key           = "Q7Dre3kowObWW8K40vRhmwRXe1RDwwy1g+sMlfdIQLSLpnNgFD2YNHZO1op+HWVmZJkjl2TfysrH+ASt75+lzg=="
+    access_key           = "8Nydb7yJ+U/borke3LU14Wg3YdxNnIOX2yyKBQm3Fhf3TnKbTHg+Ef/8btnPewb6u15pfVgK0orn+ASt/xByqQ=="
   }
 }
 
@@ -28,7 +28,7 @@ terraform {
 # Locate the existing resource group
 # The resource group name should be the same as the storage account that is used in terraform backend block above
 data "azurerm_resource_group" "main" {
-  name = "myInitialRG"
+  name = "Azuredevops"
 }
 
 # If new resource group is created and used in the subsequent resources (VM, appservice, NSG etc.) terraform will first try to delete the resource group assiciated with
@@ -50,7 +50,7 @@ module "network" {
   location             = "${var.location}"
   virtual_network_name = "${var.virtual_network_name}"
   application_type     = "${var.application_type}"
-  resource_type        = "myNetwork2"
+  resource_type        = "p3Network"
   resource_group       = data.azurerm_resource_group.main.name //module.resource_group.resource_group_name resource_group_name is the output varible name in resource_group/output.tf file
   address_prefix_test  = "${var.address_prefix_test}"
 }
@@ -68,14 +68,14 @@ module "appservice" {
   source                 = "./modules/appservice"
   location               = "${var.location}"
   application_type       = "${var.application_type}"
-  resource_type          = "AppService2"
+  resource_type          = "p3Appservice"
   resource_group         = data.azurerm_resource_group.main.name //resource_group_name is the output varible name in resource_group/output.tf file
 }
 module "publicip" {
   source                 = "./modules/publicip"
   location               = "${var.location}"
   application_type       = "${var.application_type}"
-  resource_type          = "publicip"
+  resource_type          = "p3Publicip"
   resource_group         = data.azurerm_resource_group.main.name //resource_group_name is the output varible name in resource_group/output.tf file
 }
 
@@ -83,7 +83,7 @@ module "virtual-machine" {
   source                 = "./modules/vm"
   application_type       = "${var.application_type}"
   resource_group         = data.azurerm_resource_group.main.name //resource_group_name is the output varible name in resource_group/output.tf file
-  resource_type          = "myVM3"
+  resource_type          = "p3vm"
   location               = "${var.location}"
   subnet_id              = "${module.network.subnet_id_test}"
   public_ip_address_id   = "${module.publicip.public_ip_address_id}"
