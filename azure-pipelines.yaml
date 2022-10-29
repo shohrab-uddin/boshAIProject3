@@ -12,8 +12,8 @@ stages:
 - stage: Provision
   jobs:
   - job: TerraformTasks
-    pool:
-      vmImage: 'ubuntu-latest'
+    pool: myAgentPool
+    
     steps:
     - task: DownloadSecureFile@1
       displayName: Download azsecret.conf file
@@ -86,8 +86,8 @@ stages:
   jobs:
   - job: build_artifacts  
     displayName: Build Artifacts
-    pool:
-      vmImage: 'ubuntu-latest'
+    pool: myAgentPool
+
     steps: 
     - task: ArchiveFiles@2
       displayName: 'Archive FakeRestAPI'
@@ -121,8 +121,7 @@ stages:
   jobs:
   - deployment: deploy_fakerestapi
     displayName: Deploy FakeRestAPI
-    pool:
-      vmImage: 'ubuntu-latest'
+    pool: myAgentPool
     environment: 'myEnvironment'
     strategy:
       runOnce:
@@ -139,8 +138,7 @@ stages:
 
   - deployment: VMDeploy
     displayName: Deploy Virtual Machine
-    pool:
-      vmImage: 'ubuntu-latest'
+    pool: myAgentPool
     environment:
       name: 'myEnvironment'
       resourceType: VirtualMachine
@@ -166,8 +164,7 @@ stages:
   jobs:
   - job: IntegrationTests
     displayName: Integration Tests
-    pool:
-      vmImage: 'ubuntu-latest'
+    pool: myAgentPool
     steps:
     - task: CmdLine@2
       displayName: Install Newman
