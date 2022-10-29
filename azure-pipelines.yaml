@@ -6,9 +6,7 @@ name: Azure Pipelines
 pool: myAgentPool
 
 variables:
-  python.version: '3.8.10'
-  vmImageName: 'ubuntu-18.04-LTS'
-  terraform.version: '1.2.8'
+  - group: azsecret
   
 stages:
 - stage: Provision
@@ -17,52 +15,76 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     steps:
+    - task: DownloadSecureFile@1
+      displayName: Download azsecret.conf file
+      name: azsecret
+      inputs:
+        secureFile: 'azsecret.conf'
     # Needed for Terraform VM deployment
     - task: InstallSSHKey@0
       displayName: 'Install an SSH key'    
       inputs:
-        knownHostsEntry: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDDcgQaOgRXbbehtALaBe4wL3slux0uS4YkGgqDbQCQX8A+5MUKSiHdvT3VqynGcirtaR9M6SS+HMcxezIHZ466CPs3o7c5RqRYL9ohDMEYJptOvBMkO3QimlLCS7qqnNC+2sV5NyJCS7UrIBZp83j5FxAgoy5SHw4NQn6FXKskHYKDT76MopZUgIBawR5zO0ZCG9pxjeltsf45oZJlZ8qSVQ7JDl9iwiCYodM1SyO207oE91MXnoh4l2Tl03tez6bCbS/z6VNjHEu6xLiZoPo0X1y+/84Stvj/D5CFXMTMOcDsvUGWchTgZ3MPTeXaqmlFffTyro5JRzjPOID0p0JD'
-        sshPublicKey: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC/t0NS7I7VVL9c98FHHGKgoppCi806hRsor4YKI2fznIpEpYVoDMfMshhJTYoTUA56QNQg0Trt730CaXC3D9dq3Lrae3B/xC4CP1FEz7uAOd4T+zeM4M6+853mUBQjI8lXW13iJ8ZUzmVBCbfI4Zu5WJxlJGu+/W7tIvY7C36ln02X/JkCCtzCHzXQhFhVWujZqfcjWSaYUmvH+dKCtgTgv14uE4T+ezbrfr4uvq0nxuXN9d4UClNYP1ttDc9hZ1LwyNp0fOIg6TZzo/GoiW1XaDI09MO9eKv1xOWpYO5nz3mGUkg8GOUsyazWa8Lag5jZYCXN0nBSmfkS4fZdjjvV9nbbFZ3+yxQcZb7UwJT0Y6dZgpmV6GB2L+jrfPx2jtTS6l2s0w3Obb1Ass2CHwEqx+ohHPNjdbg3dV+j736K17NZFp4liybGnSdXqucaiXIg7ZVyPkBJBQ/8af/sAsGBZGjSz2RTEOeXeS2XH+7UYIyi8wxEMymEwEuoUIq4F0M= shohrab@cc-8e6dc24c-7d65c56f6b-b6hdl'
+        knownHostsEntry: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDLOixPLai8/gdbObslt3p1+IMhuJ3qTQSehdNvhC9moaGg3n+SO7Z3hsAcFudCProqUu5+jbqLoPs4iVIXxMijFH/3F0rGz06Zkx0B59qkKHqtF8jVlyzak8ZLBJxLGoeJjkPJDS6QG9eMbPMMV4vmw9s3meeQatUsHwvhErlGRyQ/dy4oyfiaOToK3GWZYa6twhD+RxucBMsNBtBavGNMwXdcjxR+HNhfa5W7AU/TgDbLevYcT52z+fMSs6oeuDx+DwSMbw3VIbMT/f6JbfjATu3sD87oIlDbLLoiNz9C8I/JSF4KhmrUdLdrgBkxjAl8GJYeSbDO4OtUKNPoXGfl'
+        sshPublicKey: '$(public_key)'
         sshKeySecureFile: 'id_rsa_azure_portal'
     
     - task: TerraformInstaller@0
       displayName: Terraform Install
       inputs:
-        terraformVersion: 'latest'
+        terraformVersion: '1.2.9'
 
-    - task: TerraformTaskV3@3
+    - task: TerraformCLI@0
       displayName: Terraform Init
       inputs:
-        provider: 'azurerm'
         command: 'init'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        backendServiceArm: 'myRG2-service-connection'
-        backendAzureRmResourceGroupName: 'myInitialRG'
-        backendAzureRmStorageAccountName: 'initialstorage101'
-        backendAzureRmContainerName: 'initialcontainer101'
-        backendAzureRmKey: 'terraform.tfstate'
-    
-    - task: TerraformTaskV3@3
-      displayName: 'Terraform Plan'
+        commandOptions: '-backend-config=$(azsecret.secureFilePath)'
+        backendType: 'azurerm'
+        backendServiceArm: 'myServiceConnection'
+        backendAzureRmResourceGroupName: 'tfstate'
+        backendAzureRmStorageAccountName: 'tfstate17745'
+        backendAzureRmContainerName: 'tfstate'
+        allowTelemetryCollection: true
+    - task: TerraformCLI@0
+      displayName: Terraform Validate
       inputs:
-        provider: 'azurerm'
-        command: 'plan'
+        command: 'validate'
+        allowTelemetryCollection: true
+  
+    - task: AzureCLI@1
+      displayName: Set Environment Variables for Terraform
+      inputs:
+        azureSubscription: myServiceConnection
+        scriptLocation: inlineScript
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceNameAzureRM: 'myRG2-service-connection'
-        commandOptions: '-lock=false'
+        addSpnToEnvironment: true
+        inlineScript: |
+            export ARM_CLIENT_ID=$(client_id)
+            export ARM_CLIENT_SECRET=$(client_secret)
+            export ARM_SUBSCRIPTION_ID=$(subscription_id)
+            export ARM_TENANT_ID=$(tenant_id)
+    
+    - task: TerraformCLI@0
+      displayName: 'Terraform Plan'
+      inputs:        
+          command: 'plan'
+          environmentServiceName: 'myServiceConnection'
+          allowTelemetryCollection: true
+          workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
+          commandOptions: '-lock=false'
 
-    - task: TerraformTaskV3@3
+    - task: TerraformCLI@0
       displayName: Terraform Apply
       inputs:
-        provider: 'azurerm'
         command: 'apply'
+        environmentServiceName: 'myServiceConnection'
         workingDirectory: '$(System.DefaultWorkingDirectory)/terraform'
-        environmentServiceNameAzureRM: 'myRG2-service-connection'
+        allowTelemetryCollection: true
         commandOptions: '-lock=false'
 
 - stage: Build
   jobs:
-  - job: build_artifacts
+  - job: build_artifacts  
     displayName: Build Artifacts
     pool:
       vmImage: 'ubuntu-latest'
@@ -101,7 +123,7 @@ stages:
     displayName: Deploy FakeRestAPI
     pool:
       vmImage: 'ubuntu-latest'
-    environment: 'TEST'
+    environment: 'myEnvironment'
     strategy:
       runOnce:
         deploy:
@@ -109,9 +131,9 @@ stages:
           - task: AzureRmWebAppDeployment@4
             inputs:
                   ConnectionType: 'AzureRM'
-                  azureSubscription: 'myRG2-service-connection'
+                  azureSubscription: 'myServiceConnection'
                   appType: 'webApp'
-                  WebAppName: 'myApplication2-AppService2'
+                  WebAppName: 'p3application-p3Appservice'
                   packageForLinux: '$(Pipeline.Workspace)/drop-fakerestapi/fakerestapi-$(Build.BuildId).zip'
                   DeploymentType: zipDeploy             
 
@@ -120,7 +142,7 @@ stages:
     pool:
       vmImage: 'ubuntu-latest'
     environment:
-      name: 'TEST'
+      name: 'myEnvironment'
       resourceType: VirtualMachine
     strategy:
       runOnce:
