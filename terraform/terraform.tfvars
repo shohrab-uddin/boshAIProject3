@@ -1,7 +1,7 @@
 # Azure subscription vars
-subscription_id = "dfbd8d6e-c77f-414e-a3f4-14c567b43de3"
-client_id = "1577f0de-99c1-4376-a118-72297748dc23"
-client_secret = "gc68Q~l1QA5R0w9vJppAaGC9AOqm-vg2uVzmEbfW"
+subscription_id = "09e822a9-d2e3-40f8-885b-ae82ab7bffdd"
+client_id = "21db35cb-acfd-4463-aa74-7210b5596ac9"
+client_secret = "ICE8Q~IChZkUhj5R6JXFqBNAlbL8SQ-5f0E1Gc_6"
 tenant_id = "f958e84a-92b8-439f-a62d-4f45996b6d07"
 
 
