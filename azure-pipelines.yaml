@@ -24,7 +24,7 @@ stages:
     - task: InstallSSHKey@0
       displayName: 'Install an SSH key'    
       inputs:
-        knownHostsEntry: 'AAAAB3NzaC1yc2EAAAADAQABAAABAQDLOixPLai8/gdbObslt3p1+IMhuJ3qTQSehdNvhC9moaGg3n+SO7Z3hsAcFudCProqUu5+jbqLoPs4iVIXxMijFH/3F0rGz06Zkx0B59qkKHqtF8jVlyzak8ZLBJxLGoeJjkPJDS6QG9eMbPMMV4vmw9s3meeQatUsHwvhErlGRyQ/dy4oyfiaOToK3GWZYa6twhD+RxucBMsNBtBavGNMwXdcjxR+HNhfa5W7AU/TgDbLevYcT52z+fMSs6oeuDx+DwSMbw3VIbMT/f6JbfjATu3sD87oIlDbLLoiNz9C8I/JSF4KhmrUdLdrgBkxjAl8GJYeSbDO4OtUKNPoXGfl'
+        knownHostsEntry: 'known_hosts'
         sshPublicKey: '$(public_key)'
         sshKeySecureFile: 'id_rsa_azure_portal'
     
@@ -42,7 +42,7 @@ stages:
         backendType: 'azurerm'
         backendServiceArm: 'myServiceConnection'
         backendAzureRmResourceGroupName: 'tfstate'
-        backendAzureRmStorageAccountName: 'tfstate17745'
+        backendAzureRmStorageAccountName: 'tfstate30049'
         backendAzureRmContainerName: 'tfstate'
         allowTelemetryCollection: true
     - task: TerraformCLI@0
