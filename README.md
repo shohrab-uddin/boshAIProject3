@@ -30,7 +30,6 @@ tar zxvf ../vsts-agent-linux-x64-2.202.1.tar.gz
 ./config.sh To run the configuration
 sudo ./svc.sh install - To install svc
 sudo ./svc.sh start - To start the VM
-
 1.Create an environment say `TEST` and install it in the created VM
 2.Install terraform from marketplace
 3.Add secure files and upload azsecret and ssh key that you have generated.
